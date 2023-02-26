@@ -23,6 +23,7 @@ void manualPageButtonProcess(uint16 control_id, uint8 state)
 					StepMotor_SetSpeed(0, pProjectMan->sampleHomeSpeed);
 					StepMotor_SetDir(0, CW);
 					StepMotor_SetCMD(0, ENABLE);
+                    cDebug("front\r\n");
 				}
 			}
 			else
@@ -41,6 +42,7 @@ void manualPageButtonProcess(uint16 control_id, uint8 state)
 					StepMotor_SetSpeed(0, pProjectMan->sampleHomeSpeed);
 					StepMotor_SetDir(0, CCW);
 					StepMotor_SetCMD(0, ENABLE);
+                    cDebug("back\r\n");
 				}
 			}
 			else

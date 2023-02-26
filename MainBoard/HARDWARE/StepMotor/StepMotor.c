@@ -167,9 +167,7 @@ void StepMotor_Init(void)
     
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB|RCC_APB2Periph_AFIO|RCC_APB2Periph_TIM1, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-    
-	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-	
+
     for(i=0;i<SIZEOF(StepMotorPin);i++)
     {
         GPIO_InitStructure.GPIO_Pin = StepMotorPin[i].EN_GPIO_Pin;

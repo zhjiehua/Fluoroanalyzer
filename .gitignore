@@ -65,6 +65,7 @@ Tools/Analyzer/FATool/GeneratedFiles
 Tools/Analyzer/FATool/x64
 Tools/Analyzer/FATool/FATool.vcxproj.filters
 Tools/Analyzer/FATool/FATool.vcxproj.user
+Tools/Analyzer/FATool.VC.VC.opendb
 
 Tools/QR/ParaQRGenerator/.vs
 Tools/QR/ParaQRGenerator/x64
@@ -73,3 +74,6 @@ Tools/QR/ParaQRGenerator/ParaQRGenerator/GeneratedFiles
 Tools/QR/ParaQRGenerator/ParaQRGenerator/x64
 Tools/QR/ParaQRGenerator/ParaQRGenerator/ParaQRGenerator.vcxproj.filters
 Tools/QR/ParaQRGenerator/ParaQRGenerator/ParaQRGenerator.vcxproj.user
+Tools/QR/ParaQRGenerator/ParaQRGenerator.VC.VC.opendb
+
+Tools/Analyzer/build-analyzer-Desktop_Qt_5_12_4_MinGW_32_bit-Debug

@@ -64,9 +64,9 @@ int main(void)
 	delay_init();
 	uart_init(115200);	//初始化串口波特率为115200
 	LED_Init();			//初始化LED
-	Printer_Init();
+	//Printer_Init(); // 炜煌E23打印机才需要初始化
 	//QRCodeModelInit(); //手动初始化即可，这里不需要打开
-	
+
 	AT24CXX_Init();
 #ifndef STM32SIM
 	while(AT24CXX_Check())//检测不到24c64
@@ -81,7 +81,8 @@ int main(void)
 	//PhSensor_Init();
 	RelayMOS_Init();//
 	StepMotor_Init();
-	
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);  // step en PA15需要重映射
+
 	//bsp_SetTIMforInt(TIM6, 20000, 2, 0); //50us中断1次
 	
 	InitUI();
@@ -93,7 +94,7 @@ int main(void)
 //	xSemaphoreGive(pProjectMan->lcdUartSem);
 //	pProjectMan->projectEventGroup = xEventGroupCreate();
 	
-//	IWDG_Init(4,625);    //与分频数为64,重载值为625,溢出时间为1s
+	IWDG_Init(4,625);    //与分频数为64,重载值为625,溢出时间为1s
     
 	cDebug("Hello Fluoroanalyzer project!\r\n");
 	

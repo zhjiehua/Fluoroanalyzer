@@ -15,7 +15,9 @@ extern "C" {
 #include "../HARDWARE/24CXX/24cxx.h"
 #include "../HARDWARE/LED/led.h"
 #include "../HARDWARE/DDC112/ddc112_interface.h"
-	
+#include "..\HARDWARE\Printer\printer.h"
+#include "..\HARDWARE\Printer\DP_Print_inc.h"
+
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -30,13 +32,13 @@ void ProjectTask(void)
 
 	ResetDevice();//复位串口屏
 	
-	while(!pProjectMan->lcdNotifyResetFlag)
-	{
-		vTaskDelay(100);
-		
-//		if(j++ > 1000)
-//			ResetDevice();//复位串口屏
-	}
+//	while(!pProjectMan->lcdNotifyResetFlag)
+//	{
+//		vTaskDelay(100);
+//		
+////		if(j++ > 1000)
+////			ResetDevice();//复位串口屏
+//	}
 	
 	//GraphChannelAdd(CURVEPAGE_INDEX, CURVE_GRAPHY, 0, 0xFFFF);
 
@@ -47,6 +49,10 @@ void ProjectTask(void)
 //	DDC112IF_IntegralTimeSetting(11);
 //	DDC112IF_BufferSizeSetting(2);	
 	
+    // 调试
+//    pProjectMan->projectMode = PROJECTMODE_TEST;
+//    pProjectMan->projectMode = PROJECTMODE_TEST_PRINTER;
+
 	while(1)
 	{
 
@@ -109,7 +115,7 @@ void ProjectTask(void)
 				for(j=0;j<pProjectMan->sampleDataCount;j++) //大端转小端
 					EndianConvert(&pProjectMan->sampleData[j]);
 
-#if 1
+#if 0
 				DDC112IF_SendPCStart();
 				for(j=0;j<pProjectMan->sampleDataCount;j++)
 				{
@@ -171,7 +177,8 @@ void ProjectTask(void)
 				pProjectMan->sampleDataCount = 350;
 				
 				
-				
+				pProjectMan->axisTXCur = 0;
+				pProjectMan->axisCXCur = 0;
 				
 				//找极大点
 				//pProjectMan->lineNumber = 2;
@@ -182,7 +189,7 @@ void ProjectTask(void)
 				//pProjectMan->axisTXCur = FindMaximin(pProjectMan->sampleData+temp, temp); //找第二个极大点
 				//pProjectMan->axisTXCur += temp;
 				
-				cDebug("pProjectMan->axisTXCur = %d\r\n", pProjectMan->axisTXCur);
+				//cDebug("pProjectMan->axisTXCur = %d\r\n", pProjectMan->axisTXCur);
 				cDebug("pProjectMan->axisCXCur = %d\r\n", pProjectMan->axisCXCur);
 				
 				//求最小二乘法参数
@@ -205,7 +212,7 @@ void ProjectTask(void)
 				cDebug("pProjectMan->LeastSquareA = %f\r\n", pProjectMan->LeastSquareA);
 				cDebug("pProjectMan->LeastSquareB = %f\r\n", pProjectMan->LeastSquareB);
 				cDebug("pProjectMan->cThreshod = %d\r\n", pProjectMan->cThreshod);
-				cDebug("pProjectMan->tThreshod = %d\r\n", pProjectMan->tThreshod);
+				//cDebug("pProjectMan->tThreshod = %d\r\n", pProjectMan->tThreshod);
 				
 				//判断结果
 				if(pProjectMan->sampleData[pProjectMan->axisCXCur] < pProjectMan->cThreshod)
@@ -231,6 +238,9 @@ void ProjectTask(void)
 					pProjectMan->axisTXCur += temp;
 					pProjectMan->tThreshod = pProjectMan->LeastSquareA*pProjectMan->axisTXCur + pProjectMan->LeastSquareB;
 					
+					cDebug("pProjectMan->axisTXCur = %d\r\n", pProjectMan->axisTXCur);
+					cDebug("pProjectMan->tThreshod = %d\r\n", pProjectMan->tThreshod);
+					
 					if(pProjectMan->sampleData[pProjectMan->axisTXCur] < pProjectMan->tThreshod)
 					{	
 						pProjectMan->cValue = GetCTValue(pProjectMan->axisCXCur);
@@ -242,6 +252,9 @@ void ProjectTask(void)
 					{
 						pProjectMan->cValue = GetCTValue(pProjectMan->axisCXCur);
 						pProjectMan->tValue = GetCTValue(pProjectMan->axisTXCur);
+						
+						cDebug("pProjectMan->cValue = %d\r\n", pProjectMan->cValue);
+						cDebug("pProjectMan->tValue = %d\r\n", pProjectMan->tValue);
 						
 						pProjectMan->tcValue = (float)pProjectMan->tValue/(float)pProjectMan->cValue;
 						
@@ -357,6 +370,8 @@ void ProjectTask(void)
 								//报警
 								if(pProjectMan->alarmEnable)
 									SetBuzzer(100);
+								
+								vTaskDelay(1000);
 							}
 						}
 					}
@@ -423,7 +438,7 @@ void ProjectTask(void)
 			case PROJECTMODE_TEST:
 				
 				cDebug("Project Test!\r\n");
-			
+
 				DDC112IF_PurpleLedEnable(1);		
 				DDC112IF_SampleEnable(1);
 				pProjectMan->sampleDataCount = 0;			
@@ -461,6 +476,12 @@ void ProjectTask(void)
 				if(pProjectMan->page == MANUALPAGE_INDEX)
 					SetButtonValue(MANUALPAGE_INDEX, MANUAL_SAMPLE_BUTTON, 0);
 			break;
+            case PROJECTMODE_TEST_PRINTER:
+                cDebug("Project Test Printer!\r\n");
+                //TestPrintPage();
+                ResultPrint();
+                pProjectMan->projectMode = PROJECTMODE_NONE;
+            break;
 			default:
 			break;			
 		}

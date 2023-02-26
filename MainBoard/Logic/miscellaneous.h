@@ -46,6 +46,8 @@ uint32_t GetCTValue(uint16_t pos);
 #define DDC112_SETINTEGRALTIME 	0x05 //设置DDC112积分时间
 #define DDC112_SETBUFFERSIZE 	0x06 //设置DDC112缓冲区大小 ，1 <= bufferSize <= 20
 
+#define RESETDEFAULTDATA 	0x07 //恢复出厂设置
+
 void User_Data_Parse(uint8_t *buffer, uint8_t len);
 	
 #ifdef __cplusplus

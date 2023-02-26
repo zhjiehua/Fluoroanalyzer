@@ -59,17 +59,28 @@ void resultPageButtonProcess(uint16 control_id, uint8 state)
 //				GUI_CircleFill(x+2, y, 3);
 //			}
 			
-				x = pProjectMan->axisTXCur;
-				y = 180 - pProjectMan->curveData[x] + 40; //180为液晶屏曲线控件的高度
-				sprintf(str, "%d,%d\r\n", x, pProjectMan->sampleData[pProjectMan->axisTXCur]);
-				DisText(x, y-30, 1, 2, (uint8_t*)str);
-				GUI_CircleFill(x+2, y, 3);
-
-				x = pProjectMan->axisCXCur;
-				y = 180 - pProjectMan->curveData[x] + 40; //180为液晶屏曲线控件的高度
-				sprintf(str, "%d,%d\r\n", x, pProjectMan->sampleData[pProjectMan->axisCXCur]);
-				DisText(x, y-30, 1, 2, (uint8_t*)str);
-				GUI_CircleFill(x+2, y, 3);
+				SetFcolor(0xF800);//前景颜色-红色
+				SetFont_Region(0, 0, 0);//不限制文本范围
+				
+				if(pProjectMan->axisTXCur)
+				{
+					x = pProjectMan->axisTXCur;
+					y = 180 - pProjectMan->curveData[x] + 40; //180为液晶屏曲线控件的高度
+					sprintf(str, "T(%d,%d)\r\n", x, pProjectMan->sampleData[pProjectMan->axisTXCur]);
+					//cDebug("Pos T is : %s\r\n", str);
+					DisText(x, y-30, 1, 2, (uint8_t*)str);
+					GUI_CircleFill(x+2, y, 3);
+				}
+				
+				if(pProjectMan->axisCXCur)
+				{
+					x = pProjectMan->axisCXCur;
+					y = 180 - pProjectMan->curveData[x] + 40; //180为液晶屏曲线控件的高度
+					sprintf(str, "C(%d,%d)\r\n", x, pProjectMan->sampleData[pProjectMan->axisCXCur]);
+					//cDebug("Pos C is : %s\r\n", str);
+					DisText(x, y-30, 1, 2, (uint8_t*)str);
+					GUI_CircleFill(x+2, y, 3);
+				}
 		}	
 		break;
 		case RESULT_TRANS_BUTTON:

@@ -18,6 +18,7 @@
 #include "miscellaneous.h"
 #include "QRCode/QRCode.h"
 #include "..\HARDWARE\Printer\printer.h"
+#include "..\HARDWARE\Printer\DP_Print_inc.h"
 
 #include "usb_lib.h"
 #include "hw_config.h"
@@ -51,7 +52,7 @@ uint8_t ddc112_cmd_buffer[DDC112_CMD_MAX_SIZE];
 uint8_t user_cmd_buffer[USER_CMD_MAX_SIZE];	
 uint8_t usb_cmd_buffer[USB_CMD_MAX_SIZE];	
 	
-#define EEPROM_DEFAULT 0x11223345
+#define EEPROM_DEFAULT 0x11223344
 
 void InitUI(void)
 {
@@ -102,9 +103,9 @@ void InitUI(void)
 		sprintf((char*)pProjectMan->concentrationUnit, "%s%c", CONCENUNIT_STRING_DEFAULT, '\0');
 		
 		pProjectMan->lineNumber = 2;
-		pProjectMan->axisCX = 130;
-		pProjectMan->axisTX = 250;
-		pProjectMan->checkWindowAxisX = 30;
+		pProjectMan->axisCX = 78;
+		pProjectMan->axisTX = 255;
+		pProjectMan->checkWindowAxisX = 10;
 		pProjectMan->sampleType = 3;
 		
 		pProjectMan->checkRangeLow = 0.20;
@@ -113,11 +114,16 @@ void InitUI(void)
 		pProjectMan->referRangeHigh = 3.50;
 		
 		pProjectMan->fittingType = 1;
-		pProjectMan->fittingModel = 4;
-		pProjectMan->fittingPara1 = 100;
-		pProjectMan->fittingPara1 = 100;
-		pProjectMan->fittingPara1 = 100;
-		pProjectMan->fittingPara1 = 100;
+//		pProjectMan->fittingModel = 4;
+//		pProjectMan->fittingPara1 = 100;
+//		pProjectMan->fittingPara2 = 100;
+//		pProjectMan->fittingPara3 = 100;
+//		pProjectMan->fittingPara4 = 100;
+		pProjectMan->fittingModel = 0;
+		pProjectMan->fittingPara1 = 1;
+		pProjectMan->fittingPara2 = 0;
+		pProjectMan->fittingPara3 = 100;
+		pProjectMan->fittingPara4 = 100;
 		
 #ifndef STM32SIM
 		//保存数据		
@@ -285,6 +291,8 @@ void ResultPrint(void)
 {
 	char string[50];
 
+#if 0
+
 	Printer_ChineseModeSetting();
 	Printer_DefaultLineSpaceSetting();
 	Printer_PrintBottonUpSetting(0); //正序
@@ -324,6 +332,75 @@ void ResultPrint(void)
 	Printer_PrintLF();
 	
 	Printer_PrintPaperSkipNLine(7);
+
+#else // 广州优库电子 EM5822
+    InitializePrint();
+
+    TestPrintPage();return;
+
+
+//    {
+//        unsigned char optbit;
+//        EnableASCII9X17(optbit);
+//        Set_Print_Mode(optbit);
+//    }
+//    SetDefaultLineInterval();
+//    SelCountryCharacter(15);
+//    SelChineseChar();
+//    Set_ChineseCode(1);
+
+    Sel_Align_Way(1); //中间对齐
+    Print_ASCII((uint8_t*)"Hello Printer EM5822");
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    return;
+
+    Sel_Align_Way(1); //中间对齐
+    Print_ASCII((uint8_t*)"荧光免疫层析检验报告单");
+    print_And_Line();
+
+    Sel_Align_Way(0); //左对齐
+
+    sprintf(string, "批号：%s ", pProjectMan->batchString);
+	Print_ASCII((uint8_t*)string);
+	Printer_PrintLF();
+	
+	sprintf(string, "样品ID：%s ", pProjectMan->sampleString);
+	Print_ASCII((uint8_t*)string);
+	print_And_Line();
+	
+	sprintf(string, "检测项目：%s ", pProjectMan->projectString);
+	Print_ASCII((uint8_t*)string);
+	print_And_Line();
+	
+	sprintf(string, "检测结果：%1.4f ", pProjectMan->concentration);
+	Print_ASCII((uint8_t*)string);
+	if(pProjectMan->gender == 1)
+		Print_ASCII((uint8_t*)"阳性");
+	else
+		Print_ASCII((uint8_t*)"阴性");
+	print_And_Line();
+	
+	sprintf(string, "参考范围：%1.4f-%1.4f", pProjectMan->referRangeLow, pProjectMan->referRangeHigh);
+	Print_ASCII((uint8_t*)string);
+	print_And_Line();
+	
+	Print_ASCII((uint8_t*)"检测时间：");
+	Print_ASCII((uint8_t*)(pProjectMan->rtc));
+	print_And_Line();
+	
+	print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+    print_And_Line();
+#endif
 }
 
 void Sample_Home(void)
@@ -362,9 +439,13 @@ void Sample_Home(void)
 #endif
 	
 	if(!GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)) //在原点
+    {
+        cDebug("It is in home!");
 		return;
+    }
 	else //回原点
 	{
+        cDebug("Start home...");
 		StepMotor_SetSpeed(0, pProjectMan->sampleHomeSpeed);
 		StepMotor_SetDir(0, CCW);
 		StepMotor_SetCMD(0, ENABLE);
@@ -372,6 +453,7 @@ void Sample_Home(void)
 		while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) && !pProjectMan->smStopFlag)
 			vTaskDelay(10);
 		StepMotor_Stop(0);
+        cDebug("Start home...finish!");
 	}
 	
 	cDebug("Home finish!\r\n");

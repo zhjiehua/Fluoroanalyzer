@@ -15,7 +15,8 @@ extern "C" {
 #define PROJECTMODE_NORMAL		4
 #define PROJECTMODE_MANUAL		5
 #define PROJECTMODE_TEST		6
-	
+#define PROJECTMODE_TEST_PRINTER		7
+
 #ifdef __cplusplus
 }
 #endif

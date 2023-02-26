@@ -5,6 +5,7 @@
 #include "CPrintf.h"
 #include "management.h"
 #include "../HARDWARE/StepMotor/StepMotor.h"
+#include "../HARDWARE/24CXX/24cxx.h"
 
 void GetChipID(uint32_t *chipID)
 {
@@ -372,7 +373,7 @@ uint32_t GetCTValue(uint16_t pos)
 	uint16_t cnt = 0;
 	uint32_t temp;
 	pProjectMan->peakBufferCount = 0;
-	while(cnt++ <= pProjectMan->sampleDataCount/4)
+	while(cnt++ <= pProjectMan->sampleDataCount/4 && cnt <= pProjectMan->checkWindowAxisX/2)
 	//while(1)
 	{
 			temp = pProjectMan->LeastSquareA*(pos + i) + pProjectMan->LeastSquareB;
@@ -383,7 +384,7 @@ uint32_t GetCTValue(uint16_t pos)
 	cDebug("GetCTValue = %d ~ ", i);
 	
 	cnt = 0;
-	while(cnt++ <= pProjectMan->sampleDataCount/2)
+	while(cnt++ <= pProjectMan->sampleDataCount/2 && cnt < pProjectMan->checkWindowAxisX)
 	{
 			temp = pProjectMan->LeastSquareA*(pos + i) + pProjectMan->LeastSquareB;
 			if(pProjectMan->sampleData[pos + i] >= temp)
@@ -397,6 +398,38 @@ uint32_t GetCTValue(uint16_t pos)
 	cDebug("%d\r\n", i);
 	return Average(pProjectMan->peakBuffer, pProjectMan->peakBufferCount);
 }
+
+//uint32_t GetCTValue(uint16_t pos)
+//{
+//	int16_t i = 0;
+//	uint16_t cnt = 0;
+//	uint32_t temp;
+//	pProjectMan->peakBufferCount = 0;
+//	while(cnt++ <= pProjectMan->sampleDataCount/4)
+//	//while(1)
+//	{
+//			temp = pProjectMan->LeastSquareA*(pos + i) + pProjectMan->LeastSquareB;
+//			if(pProjectMan->sampleData[pos + i] >= temp) i--;
+//			else break;
+//	}
+//	i++;
+//	cDebug("GetCTValue = %d ~ ", i);
+//	
+//	cnt = 0;
+//	while(cnt++ <= pProjectMan->sampleDataCount/2)
+//	{
+//			temp = pProjectMan->LeastSquareA*(pos + i) + pProjectMan->LeastSquareB;
+//			if(pProjectMan->sampleData[pos + i] >= temp)
+//			{
+//				pProjectMan->peakBuffer[pProjectMan->peakBufferCount] = pProjectMan->sampleData[pos + i] - temp;
+//				pProjectMan->peakBufferCount++;
+//				i++;
+//			}
+//			else break;
+//	}
+//	cDebug("%d\r\n", i);
+//	return Average(pProjectMan->peakBuffer, pProjectMan->peakBufferCount);
+//}
 
 
 
@@ -438,6 +471,13 @@ void User_Data_Parse(uint8_t *buffer, uint8_t len)
 		case DDC112_SETBUFFERSIZE: //0x06
 			DDC112IF_BufferSizeSetting(buffer[1]);
 			cDebug("DDC112IF_BufferSizeSetting %d\r\n", buffer[1]);
+		break;
+		case RESETDEFAULTDATA:
+		{
+			uint32_t dat = 0;
+			AT24CXX_Write(POWERONTEST_BASEADDR, (uint8_t*)&dat, sizeof(uint32_t));
+			cDebug("Reset default data!\r\n");
+		}
 		break;
 		default:
 		break;
