@@ -13,6 +13,7 @@ public:
 	static QByteArray QString2Hex(QString str);
 	static qint8 ConvertHexChar(qint8 ch);
 	static void LeastSquare(QVector<qint32> &myList, double *a, double *b);
+	static qint32 Misc::orderFilter(QVector<qint32> &myList, qint32 order);
 
 public slots:
 

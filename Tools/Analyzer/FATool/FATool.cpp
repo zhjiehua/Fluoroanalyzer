@@ -277,15 +277,14 @@ void FATool::bgSendButtonsClicked(int id)
 }
 
 
-
-qint32 FATool::BufferFindCMD(void)
+quint32 FATool::BufferFindCMD(void)
 {
-	qint32 cmdSize = 0;
-	qint32 size;
+	quint32 cmdSize = 0;
+	quint32 size;
 	char data;
-	static qint32 cmdPos = 0;
-	static qint16 cmdHead = 0;
-	static qint8 cmdLen = 3;
+	static quint32 cmdPos = 0;
+	static quint16 cmdHead = 0;
+	static quint8 cmdLen = 3;
 
 	while (uartBuffer.size())
 	{
@@ -327,30 +326,30 @@ qint32 FATool::BufferFindCMD(void)
 
 void FATool::ProcessMessage(void)
 {
-	qint8 cmd = dataBuffer.at(3);
-	qint32 temp;
-	qint32 index;
+	quint8 cmd = dataBuffer.at(3);
+	quint32 temp;
+	quint32 index;
 	char *ch = dataBuffer.data();
 
 	double a = 0;
 	double b = 0;
 
-	qint8 maxNum;
+	uint8_t maxNum;
 	int32_t maxPos[3];
 
 	switch (cmd)
 	{
 	case 0x81: //系统变量
 	{
-		qint8 addr = dataBuffer.at(4);
-		qint8 len = dataBuffer.at(5);
+		quint8 addr = dataBuffer.at(4);
+		quint8 len = dataBuffer.at(5);
 
 		//if (addr == 0x20)//RTC
 		//{
-		//	qint8 year = dataBuffer.at(6);
-		//	qint8 mon = dataBuffer.at(7);
-		//	qint8 date = dataBuffer.at(8);
-		//	qint32 d = hmiDriver->BCD2Int(year) * 365
+		//	quint8 year = dataBuffer.at(6);
+		//	quint8 mon = dataBuffer.at(7);
+		//	quint8 date = dataBuffer.at(8);
+		//	quint32 d = hmiDriver->BCD2Int(year) * 365
 		//		+ hmiDriver->BCD2Int(mon) * 12
 		//		+ hmiDriver->BCD2Int(date);
 
@@ -360,8 +359,8 @@ void FATool::ProcessMessage(void)
 	break;
 	case 0x83: //用户变量
 	{
-		qint16 addr = dataBuffer.at(4) << 8 | dataBuffer.at(5);
-		qint8 len = dataBuffer.at(6);
+		quint16 addr = dataBuffer.at(4) << 8 | dataBuffer.at(5);
+		quint8 len = dataBuffer.at(6);
 
 		if (addr == 0x000C)
 			qDebug() << "read data is : " << dataBuffer.data() + 7;
@@ -370,11 +369,11 @@ void FATool::ProcessMessage(void)
 
 
 	case 0x8A: //ADC data
-		temp = (qint32)(qint8)dataBuffer.at(7) + ((qint32)(qint8)dataBuffer.at(6) << 8) + ((qint32)(qint8)dataBuffer.at(5) << 16) + ((qint32)(qint8)dataBuffer.at(4) << 24);
-		//temp = (qint32)(qint8)dataBuffer.at(4) + ((qint32)(qint8)dataBuffer.at(5) << 8) + ((qint32)(qint8)dataBuffer.at(6) << 16) + ((qint32)(qint8)dataBuffer.at(7) << 24);
+		temp = (quint32)(quint8)dataBuffer.at(7) + ((quint32)(quint8)dataBuffer.at(6) << 8) + ((quint32)(quint8)dataBuffer.at(5) << 16) + ((quint32)(quint8)dataBuffer.at(4) << 24);
+		//temp = (uint32)(uint8)dataBuffer.at(4) + ((uint32)(uint8)dataBuffer.at(5) << 8) + ((uint32)(uint8)dataBuffer.at(6) << 16) + ((uint32)(uint8)dataBuffer.at(7) << 24);
 
-		//index = (qint16)(qint8)dataBuffer.at(9) + ((qint16)(qint8)dataBuffer.at(8) << 8);
-		//index = (qint32)(qint8)dataBuffer.at(11) + ((qint32)(qint8)dataBuffer.at(10) << 8) + ((qint32)(qint8)dataBuffer.at(9) << 16) + ((qint32)(qint8)dataBuffer.at(8) << 24);
+		//index = (uint16)(uint8)dataBuffer.at(9) + ((uint16)(uint8)dataBuffer.at(8) << 8);
+		//index = (uint32)(uint8)dataBuffer.at(11) + ((uint32)(uint8)dataBuffer.at(10) << 8) + ((uint32)(uint8)dataBuffer.at(9) << 16) + ((uint32)(uint8)dataBuffer.at(8) << 24);
 
 		//qDebug() << "index = " << index;
 		//qDebug() << "temp = " << temp;
@@ -403,13 +402,13 @@ void FATool::ProcessMessage(void)
 
 #define FILTER_LIST_MAX 0
 		//滤波
-		for (qint16 i = 0; i < adcData.count(); i++)
+		for (quint16 i = 0; i < adcData.count(); i++)
 		{
 			if (filterData.count() > FILTER_LIST_MAX)
 				filterData.removeFirst();
 			filterData.append(adcData.at(i));
 
-			//qint32 temp = orderFilter(filterData, filterData.count());
+			quint32 temp = Misc::orderFilter(filterData, filterData.count());
 
 			plotData.append(QPointF(i, (qreal)adcData.at(i)));
 			//plotData2.append(QPointF(i, (qreal)temp));
@@ -418,13 +417,13 @@ void FATool::ProcessMessage(void)
 			adcData2.append(temp);
 		}
 		//第二次滤波
-		//for (qint16 i = 0; i < adcData2.count(); i++)
+		//for (uint16 i = 0; i < adcData2.count(); i++)
 		//{
 		//	if (filterData2.count() > FILTER_LIST_MAX)
 		//		filterData2.removeFirst();
 		//	filterData2.append(adcData2.at(i));
 
-		//	qint32 temp = orderFilter(filterData2, filterData2.count());
+		//	uint32 temp = orderFilter(filterData2, filterData2.count());
 
 		//	plotData3.append(QPointF(i, (qreal)temp));
 		//	adcData3.append(temp);
@@ -436,7 +435,7 @@ void FATool::ProcessMessage(void)
 		qDebug() << "a = " << a;
 		qDebug() << "b = " << b;
 
-		for (qint16 i = 0; i < adcData2.count(); i++)
+		for (quint16 i = 0; i < adcData2.count(); i++)
 		{
 			adcData4.append(a*i + b);
 			plotData2.append(QPointF(i, (qreal)adcData4.at(i)));
@@ -454,20 +453,20 @@ void FATool::ProcessMessage(void)
 		qDebug() << "a = " << a;
 		qDebug() << "b = " << b;
 
-		for (qint16 i = 0; i < adcData3.count(); i++)
+		for (quint16 i = 0; i < adcData3.count(); i++)
 		{
 			adcData5.append(a*i + b);
 			plotData3.append(QPointF(i, (qreal)adcData5.at(i)));
 		}
 
 
-		//for (qint16 i = 0; i < adcData3.count(); i++)
+		//for (uint16 i = 0; i < adcData3.count(); i++)
 		//{
 		//	adcData5.append(adcData3.at(i) - adcData4.at(i));
 		//	plotData3.append(QPointF(i, (qreal)adcData5.at(i)));
 		//}
 
-		//for (qint16 i = 0; i < adcData5.count(); i++)
+		//for (uint16 i = 0; i < adcData5.count(); i++)
 		//	plotData.append(QPointF(i, (qreal)adcData5.at(i)));
 
 		plotter.setCurveData(0, plotData);
@@ -479,7 +478,7 @@ void FATool::ProcessMessage(void)
 		/*maxNum = MaxPoint(adcData5, maxPos, 100000);
 		qDebug() << "maxNum = " << maxNum;*/
 		//{
-		//	for (qint8 i = 0; i < maxNum; i++)
+		//	for (uint8_t i = 0; i < maxNum; i++)
 		//	{
 		//		QVector<QPointF> plotData4;
 		//		plotData4.clear();
@@ -491,11 +490,11 @@ void FATool::ProcessMessage(void)
 
 		//求平均值
 #define AVERAGE_WIN	10
-		//for (qint8 i = 0; i < maxNum; i++)
+		//for (uint8_t i = 0; i < maxNum; i++)
 		//{
 		//	uint64_t average = 0;
-		//	qint32 index = maxPos[i]- AVERAGE_WIN;
-		//	for (qint8 j = 0; j < 2 * AVERAGE_WIN; j++)
+		//	uint32_t index = maxPos[i]- AVERAGE_WIN;
+		//	for (uint8_t j = 0; j < 2 * AVERAGE_WIN; j++)
 		//		average += adcData5.at(index + j);
 		//	average /= 2 * AVERAGE_WIN;
 
@@ -512,7 +511,7 @@ void FATool::ProcessMessage(void)
 		//	QFile file("E:\\GitHubRepository\\CPAP\\CPAP_SimMCULogic\\CPAP_SimMCULogic\\RawData.txt");
 		//	file.open(QIODevice::WriteOnly | QIODevice::Text);
 		//	QTextStream stream(&file);
-		//	for (qint16 i = 0; i < adcData.count(); i++)
+		//	for (uint16 i = 0; i < adcData.count(); i++)
 		//	{
 		//		stream << adcData.at(i) << "\n";
 		//	}
@@ -527,7 +526,7 @@ void FATool::ProcessMessage(void)
 
 		//	double vec[512];
 		//	int len = sizeof(vec) / sizeof(double);
-		//	qqint16 i = 0;
+		//	quint16 i = 0;
 		//	//for (i = 0; i < len; i++)
 		//	//	vec[i] = adcData.at(i);
 		//	for (i = 0; i < len; i++)
@@ -555,7 +554,7 @@ void FATool::ProcessMessage(void)
 
 		//	//t.ifft(outVec, len, invert);
 
-		//	for (qint16 i = 0; i < len/2; i++)
+		//	for (uint16 i = 0; i < len/2; i++)
 		//	{
 		//		qreal power = sqrt(outVec[i].rl*outVec[i].rl + outVec[i].im*outVec[i].im);
 		//		//qreal power = sqrt(inVec[i].rl*inVec[i].rl + inVec[i].im*inVec[i].im);
@@ -573,7 +572,6 @@ void FATool::ProcessMessage(void)
 
 	dataBuffer.clear();
 }
-
 
 void FATool::UartDataParse()
 {

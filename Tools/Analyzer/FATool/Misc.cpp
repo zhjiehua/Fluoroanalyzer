@@ -71,6 +71,20 @@ void Misc::LeastSquare(QVector<qint32> &myList, double *a, double *b)
 	//*b = ySum / len;
 }
 
+qint32 Misc::orderFilter(QVector<qint32> &myList, qint32 order)
+{
+	qint32 average = 0;
+	qint32 averageCnt = 0;
+	qint32 len = myList.count();
+	for (int i = 0; i<len; i++)
+	{
+		average += (myList.at(i) * (i + 1));
+		averageCnt += (i + 1);
+	}
+	average /= averageCnt;
+	return average;
+}
+
 /*********************************************************************************
 *
 *

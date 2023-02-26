@@ -20,10 +20,10 @@ public:
 	void SetNonSelectable(void);
 	void SetSelectable(void);
 
-	qint32 BufferFindCMD(void);
+	quint32 BufferFindCMD(void);
 	void ProcessMessage(void);
 
-	void FFT_Test(void);
+	//void FFT_Test(void);
 
 public slots:
 	void on_btnOpen_clicked();   //

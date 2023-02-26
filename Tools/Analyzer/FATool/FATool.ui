@@ -310,6 +310,29 @@ p, li { white-space: pre-wrap; }
      <string>数据接收区</string>
     </property>
    </widget>
+   <zorder>groupBox</zorder>
+   <zorder>groupBox_2</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_6</zorder>
+   <zorder>label_3</zorder>
+   <zorder>cmbStopBits</zorder>
+   <zorder>label</zorder>
+   <zorder>btnClrRcv</zorder>
+   <zorder>cmbBaudRate</zorder>
+   <zorder>label_4</zorder>
+   <zorder>teSendData</zorder>
+   <zorder>btnOpen</zorder>
+   <zorder>rdbSendHex</zorder>
+   <zorder>cmbFlowControl</zorder>
+   <zorder>label_5</zorder>
+   <zorder>rdbSendASCII</zorder>
+   <zorder>rdbRcvASCII</zorder>
+   <zorder>cmbDataBits</zorder>
+   <zorder>cmbPortName</zorder>
+   <zorder>btnSend</zorder>
+   <zorder>cmbParity</zorder>
+   <zorder>rdbRcvHex</zorder>
+   <zorder>teReceiveData</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
